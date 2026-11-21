@@ -3,10 +3,11 @@
 
 const SERVIDORES = [
   'https://overpass-api.de/api/interpreter',
+  'https://overpass.private.coffee/api/interpreter',
   'https://overpass.kumi.systems/api/interpreter',
 ]
 
-const TEMPO_MAXIMO_MS = 30000
+const TEMPO_MAXIMO_MS = 25000
 
 // Correspondência entre as etiquetas do OSM e os tipos da aplicação (ver data/tipos.js)
 const MAPA_TIPOS = {
@@ -25,14 +26,15 @@ const NOMES_TIPOS = {
   farmacia: 'Farmácia',
 }
 
-/** Consulta Overpass QL com todas as unidades de saúde dentro da área da cidade. */
+/**
+ * Consulta Overpass QL com as unidades de saúde dentro da área da cidade.
+ * Procura apenas a etiqueta "amenity" (a mais usada no OpenStreetMap): a consulta fica
+ * muito mais rápida do que procurar também "healthcare=*".
+ */
 export function consultaCidade(cidade) {
   const caixa = cidade.bbox.join(',')
   return `[out:json][timeout:25];
-(
-  nwr["amenity"~"^(hospital|clinic|doctors|pharmacy)$"](${caixa});
-  nwr["healthcare"~"^(hospital|clinic|centre|doctor|pharmacy)$"](${caixa});
-);
+nwr["amenity"~"^(hospital|clinic|doctors|pharmacy)$"](${caixa});
 out center tags;`
 }
 
@@ -41,40 +43,64 @@ export function consultaElemento(osmType, osmId) {
   return `[out:json][timeout:15];${osmType}(${osmId});out center tags;`
 }
 
+/** Um pedido a um servidor. Rejeita se falhar, se demorar demasiado ou se for cancelado. */
+async function pedirAUmServidor(url, consulta, signal) {
+  const resposta = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'data=' + encodeURIComponent(consulta),
+    signal,
+  })
+  if (!resposta.ok) throw new Error(`O servidor ${new URL(url).host} respondeu com o código ${resposta.status}`)
+  const json = await resposta.json()
+  return json.elements ?? []
+}
+
 /**
- * Envia a consulta à Overpass API. Se um servidor falhar, tenta o seguinte.
+ * Envia a consulta aos servidores da Overpass API AO MESMO TEMPO e usa a primeira resposta
+ * válida (Promise.any); os restantes pedidos são cancelados. Se todos falharem, tenta mais uma vez.
  * Usa POST com "application/x-www-form-urlencoded" (pedido simples, sem preflight CORS).
  */
 export async function pedirOverpass(consulta, { signal } = {}) {
   let ultimoErro = new Error('Sem servidores disponíveis')
 
-  for (const url of SERVIDORES) {
+  for (let ronda = 1; ronda <= 2; ronda++) {
+    if (ronda > 1) await esperar(2000, signal)
+
     const controlador = new AbortController()
     const cancelar = () => controlador.abort()
     signal?.addEventListener('abort', cancelar)
     const temporizador = setTimeout(cancelar, TEMPO_MAXIMO_MS)
 
     try {
-      const resposta = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'data=' + encodeURIComponent(consulta),
-        signal: controlador.signal,
-      })
-      if (!resposta.ok) throw new Error(`O servidor respondeu com o código ${resposta.status}`)
-      const json = await resposta.json()
-      return json.elements ?? []
+      const pedidos = SERVIDORES.map((url) =>
+        pedirAUmServidor(url, consulta, controlador.signal).catch((erro) => {
+          if (!controlador.signal.aborted) console.warn('Overpass: tentativa falhou —', erro.message)
+          throw erro
+        }),
+      )
+      return await Promise.any(pedidos)
     } catch (erro) {
-      // Se foi o utilizador (ou a mudança de página) a cancelar, não tentamos outro servidor
       if (signal?.aborted) throw new DOMException('Pedido cancelado', 'AbortError')
-      ultimoErro = erro
+      ultimoErro = erro.errors?.at(-1) ?? erro
     } finally {
+      controlador.abort() // cancela os pedidos que ainda estão em curso
       clearTimeout(temporizador)
       signal?.removeEventListener('abort', cancelar)
     }
   }
 
   throw ultimoErro
+}
+
+function esperar(ms, signal) {
+  return new Promise((resolver, rejeitar) => {
+    const t = setTimeout(resolver, ms)
+    signal?.addEventListener('abort', () => {
+      clearTimeout(t)
+      rejeitar(new DOMException('Pedido cancelado', 'AbortError'))
+    }, { once: true })
+  })
 }
 
 /**

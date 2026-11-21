@@ -29,19 +29,20 @@ Muitas pessoas em Moçambique não sabem qual é a unidade de saúde ou a farmá
 | Abelardo Miambo | 7928 | [@AbelPedro-cv](https://github.com/AbelPedro-cv) |
 | Bill Ndayisaba | 7917 | [@Bill-Ars](https://github.com/Bill-Ars) |
 | Edmilson Conge | 7926 | [@aresgrouplda](https://github.com/aresgrouplda) |
+
 ## Fonte de dados
 
-- **OpenStreetMap**, através da **Overpass API** (`https://overpass-api.de/api/interpreter`, com o servidor alternativo `overpass.kumi.systems`). A consulta procura elementos com `amenity=hospital|clinic|doctors|pharmacy` ou `healthcare=*` dentro da área de cada cidade.
+- **OpenStreetMap**, através da **Overpass API**. Os pedidos são enviados em paralelo a três servidores públicos (`overpass-api.de`, `overpass.private.coffee` e `overpass.kumi.systems`) e é usada a primeira resposta válida. A consulta procura elementos com `amenity=hospital|clinic|doctors|pharmacy` dentro da área de cada cidade.
 - Licença: [Open Database License (ODbL) 1.0](https://opendatacommons.org/licenses/odbl/), © contribuidores do OpenStreetMap. A atribuição aparece no rodapé da aplicação.
-- **Cópia local (alternativa):** se a API estiver em baixo, a aplicação usa os ficheiros `public/dados/<cidade>.json`, gerados com `npm run dados`. Cada ficheiro guarda a origem, a licença e a data de recolha (`recolhidoEm`).
+- **Cópia local (mostrada primeiro):** para os dados aparecerem sem espera, a aplicação carrega primeiro `public/dados/<cidade>.json` (cópia do dataset obtida da Overpass API a 21/11/2026, licença ODbL; a data dos dados está no campo `osm3s.timestamp_osm_base` de cada ficheiro) e, em segundo plano, pede os dados actualizados à API. Os ficheiros podem ser regenerados com `npm run dados`.
 - Os dados nunca estão escritos à mão nos componentes: o acesso está em `src/services/overpass.js` e nos composables `useUnidades.js` e `useUnidade.js`.
 
 ## Serviço de e-mail
 
 - **EmailJS** (plano gratuito), chamado a partir do browser com `@emailjs/browser`.
-- Só é usada a *public key* do EmailJS, e os domínios autorizados estão limitados ao nosso GitHub Pages no painel do serviço. As chaves vêm de variáveis de ambiente e nunca estão no código.
+- Só é usada a *public key* do EmailJS, que foi desenhada para ser usada no browser. A *private key* nunca é usada nem guardada. Os identificadores vêm de variáveis de ambiente e não estão escritos no código.
+- A restrição de domínios autorizados só existe nos planos pagos do EmailJS. No plano gratuito, o risco de abuso fica limitado pela quota de 200 envios por mês, e a aplicação desactiva o botão durante o envio para evitar e-mails repetidos.
 - Na publicação, os valores ficam em **Settings → Secrets and variables → Actions** e são lidos pelo GitHub Actions durante o *build*.
-- O formulário valida os dados e emite um evento; a página de detalhe chama o serviço através de `useEmail`. Sem as três variáveis configuradas, o envio apresenta uma mensagem de indisponibilidade.
 
 ## Correr localmente
 
