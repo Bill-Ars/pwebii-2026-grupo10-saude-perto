@@ -28,8 +28,7 @@ Muitas pessoas em Moçambique não sabem qual é a unidade de saúde ou a farmá
 | Ayrton Nhaguaga | 8267 | [@ayrton-nhaguaga](https://github.com/ayrton-nhaguaga) |
 | Abelardo Miambo | 7928 | [@AbelPedro-cv](https://github.com/AbelPedro-cv) |
 | Bill Ndayisaba | 7917 | [@Bill-Ars](https://github.com/Bill-Ars) |
-| Edmilson Conge | 7926 | [@EdmilsonConge](https://github.com/EdmilsonConge) |
-
+| Edmilson Conge | 7926 | [@aresgrouplda](https://github.com/aresgrouplda) |
 ## Fonte de dados
 
 - **OpenStreetMap**, através da **Overpass API** (`https://overpass-api.de/api/interpreter`, com o servidor alternativo `overpass.kumi.systems`). A consulta procura elementos com `amenity=hospital|clinic|doctors|pharmacy` ou `healthcare=*` dentro da área de cada cidade.
