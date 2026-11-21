@@ -20,6 +20,7 @@ Muitas pessoas em Moçambique não sabem qual é a unidade de saúde ou a farmá
 - Cache de 24 horas no telemóvel, para não repetir pedidos e poupar dados móveis
 - Estados de carregamento, erro (com «Tentar novamente») e lista vazia, e aviso quando está sem Internet
 - Página 404 para endereços inexistentes
+- Tema escuro e claro, com interruptor no cabeçalho (a escolha fica guardada no browser)
 
 ## Membros do grupo
 

@@ -2,6 +2,7 @@
 import { useRouter } from 'vue-router'
 import SeletorCidade from '../components/SeletorCidade.vue'
 import IconeSvg from '../components/IconeSvg.vue'
+import LogoSaudePerto from '../components/LogoSaudePerto.vue'
 import { CIDADES, cidadeMaisProxima } from '../data/cidades.js'
 import { LISTA_TIPOS } from '../data/tipos.js'
 import { useLocalizacao } from '../composables/useLocalizacao.js'
@@ -21,6 +22,11 @@ async function usarLocalizacao() {
 
 <template>
   <section class="heroi">
+    <svg class="heroi__batimento" viewBox="0 0 600 120" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 70h170l18-38 26 76 22-56 14 18h350" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
+    </svg>
+    <div class="heroi__cruz" aria-hidden="true"><LogoSaudePerto :tamanho="120" /></div>
+    <p class="heroi__etiqueta"><IconeSvg nome="batimento" :tamanho="16" /> Saúde em Moçambique</p>
     <h1>Encontre cuidados de saúde perto de si</h1>
     <p>
       Hospitais, centros de saúde, consultórios e farmácias em {{ CIDADES.length }} cidades de Moçambique, com
