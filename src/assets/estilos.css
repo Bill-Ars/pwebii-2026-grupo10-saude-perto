@@ -4,49 +4,13 @@
 
 :root,
 [data-tema='escuro'] {
-  color-scheme: dark;
-  --fundo-base: #020c22;
-  --fundo-topo: #04183f;
-  --brilho-1: rgb(34 211 238 / 0.22);
-  --brilho-2: rgb(59 130 246 / 0.25);
-  --padrao: rgb(103 232 249 / 0.07);
-  --superficie: rgb(10 31 72 / 0.62);
-  --superficie-forte: rgb(12 36 82 / 0.9);
-  --superficie-campo: rgb(4 18 46 / 0.75);
-  --borda: rgb(125 211 252 / 0.18);
-  --borda-forte: rgb(125 211 252 / 0.38);
-  --texto: #e6f4ff;
-  --texto-suave: #9fb9d6;
-  --primaria: #22d3ee;
-  --primaria-forte: #67e8f9;
-  --primaria-suave: rgb(34 211 238 / 0.14);
-  --primaria-texto: #021428;
-  --brilho: 0 0 18px rgb(34 211 238 / 0.45);
-  --vermelho: #f87171;
-  --sombra: 0 10px 30px rgb(0 0 0 / 0.35);
-  --cabecalho: rgb(2 12 34 / 0.72);
-  --rodape: rgb(2 10 28 / 0.85);
-  --erro-fundo: rgb(127 29 29 / 0.35);
-  --erro-texto: #fecaca;
-  --erro-borda: rgb(248 113 113 / 0.45);
-  --sucesso-fundo: rgb(6 78 59 / 0.45);
-  --sucesso-texto: #a7f3d0;
-  --sucesso-borda: rgb(52 211 153 / 0.45);
-  --esqueleto-1: rgb(125 211 252 / 0.08);
-  --esqueleto-2: rgb(125 211 252 / 0.18);
-}
-
-[data-tema='claro'] {
   color-scheme: light;
-  --fundo-base: #eef6ff;
-  --fundo-topo: #dcecff;
-  --brilho-1: rgb(34 211 238 / 0.25);
-  --brilho-2: rgb(59 130 246 / 0.18);
-  --padrao: rgb(14 116 144 / 0.07);
-  --superficie: rgb(255 255 255 / 0.78);
-  --superficie-forte: #ffffff;
-  --superficie-campo: #ffffff;
-  --borda: rgb(14 116 144 / 0.18);
+  /* Página branca; as superfícies (cartões, painéis, campos) são azul-marinho */
+  --fundo-base: #ffffff;
+  --superficie: #0b2a5b;
+  --superficie-forte: #0e3570;
+  --superficie-campo: #0b2a5b;
+  --borda: rgb(11 42 91 / 0.18);
   --borda-forte: rgb(3 105 161 / 0.45);
   --texto: #0b2545;
   --texto-suave: #4a6382;
@@ -54,10 +18,71 @@
   --primaria-forte: #075985;
   --primaria-suave: rgb(3 105 161 / 0.1);
   --primaria-texto: #ffffff;
-  --brilho: 0 0 16px rgb(14 165 233 / 0.35);
+  --brilho: 0 0 14px rgb(14 165 233 / 0.3);
   --vermelho: #b91c1c;
-  --sombra: 0 8px 24px rgb(15 52 96 / 0.1);
-  --cabecalho: rgb(255 255 255 / 0.78);
+  --sombra: 0 8px 22px rgb(11 42 91 / 0.18);
+  --cabecalho: rgb(255 255 255 / 0.88);
+  --rodape: #0b2545;
+  --erro-fundo: #fef2f2;
+  --erro-texto: #991b1b;
+  --erro-borda: #fecaca;
+  --sucesso-fundo: #ecfdf5;
+  --sucesso-texto: #065f46;
+  --sucesso-borda: #a7f3d0;
+  --esqueleto-1: #e6eef8;
+  --esqueleto-2: #d3e1f1;
+}
+
+/* Dentro das superfícies azul-marinho do tema escuro, o texto e os detalhes ficam claros */
+[data-tema='escuro'] :is(.cartao-cidade, .painel, .cartao-unidade, .estado--caixa, .esqueleto, .ficha,
+  .detalhe__cabecalho, .chip, .pesquisa, .seletor-compacto, .botao--secundario,
+  .nav-pilula, .tabela-rolavel) {
+  --texto: #e6f4ff;
+  --texto-suave: #a9c2de;
+  --primaria: #22d3ee;
+  --primaria-forte: #67e8f9;
+  --primaria-suave: rgb(34 211 238 / 0.14);
+  --primaria-texto: #021428;
+  --borda: rgb(125 211 252 / 0.22);
+  --borda-forte: rgb(125 211 252 / 0.5);
+  --brilho: 0 0 14px rgb(34 211 238 / 0.35);
+  --superficie-campo: rgb(2 14 40 / 0.55);
+  --superficie-forte: #123d7d;
+  --vermelho: #fca5a5;
+  --erro-fundo: rgb(127 29 29 / 0.4);
+  --erro-texto: #fecaca;
+  --erro-borda: rgb(248 113 113 / 0.5);
+  --sucesso-fundo: rgb(6 78 59 / 0.5);
+  --sucesso-texto: #a7f3d0;
+  --sucesso-borda: rgb(52 211 153 / 0.5);
+  --esqueleto-1: rgb(125 211 252 / 0.1);
+  --esqueleto-2: rgb(125 211 252 / 0.22);
+  color: var(--texto);
+}
+
+/* Pesquisa e seletor ficam directamente sobre o fundo branco: azul-marinho sólido */
+[data-tema='escuro'] :is(.pesquisa, .seletor-compacto) {
+  --superficie-campo: #0b2a5b;
+}
+
+[data-tema='claro'] {
+  color-scheme: light;
+  --fundo-base: #ffffff;
+  --superficie: #ffffff;
+  --superficie-forte: #f1f6fc;
+  --superficie-campo: #ffffff;
+  --borda: rgb(11 42 91 / 0.14);
+  --borda-forte: rgb(3 105 161 / 0.45);
+  --texto: #0b2545;
+  --texto-suave: #4a6382;
+  --primaria: #0369a1;
+  --primaria-forte: #075985;
+  --primaria-suave: rgb(3 105 161 / 0.08);
+  --primaria-texto: #ffffff;
+  --brilho: 0 0 14px rgb(14 165 233 / 0.25);
+  --vermelho: #b91c1c;
+  --sombra: 0 6px 18px rgb(11 42 91 / 0.08);
+  --cabecalho: rgb(255 255 255 / 0.88);
   --rodape: #0b2545;
   --erro-fundo: #fef2f2;
   --erro-texto: #991b1b;
@@ -89,33 +114,6 @@ body {
   min-height: 100vh;
   background: var(--fundo-base);
   transition: background-color 0.3s;
-}
-
-/* Fundo: brilhos + padrão hexagonal, numa camada fixa (não pesa no scroll) */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(60rem 30rem at 10% -10%, var(--brilho-1), transparent 60%),
-    radial-gradient(50rem 30rem at 100% 20%, var(--brilho-2), transparent 60%),
-    linear-gradient(180deg, var(--fundo-topo) 0%, var(--fundo-base) 55%);
-}
-
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  color: var(--padrao);
-  background-color: currentColor;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='98' viewBox='0 0 56 98'%3E%3Cpath d='M28 66L0 50V18L28 2l28 16v32L28 66zm0 32V66m0-64V-30' fill='none' stroke='black' stroke-width='1'/%3E%3C/svg%3E");
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='98' viewBox='0 0 56 98'%3E%3Cpath d='M28 66L0 50V18L28 2l28 16v32L28 66zm0 32V66m0-64V-30' fill='none' stroke='black' stroke-width='1'/%3E%3C/svg%3E");
-  -webkit-mask-size: 56px 98px;
-  mask-size: 56px 98px;
 }
 
 #app {
@@ -785,6 +783,11 @@ svg {
   background: color-mix(in srgb, var(--texto) 12%, transparent);
 }
 
+/* O chip «Todos» usa a cor principal do tema: texto com contraste adequado */
+.chip--activo:not([style]) {
+  color: var(--primaria-texto);
+}
+
 .chip--activo .chip__contagem {
   background: rgb(255 255 255 / 0.25);
 }
@@ -821,24 +824,13 @@ svg {
   background: var(--superficie);
   border: 1px solid var(--borda);
   border-radius: var(--raio);
-  padding: 1rem 1rem 1rem 1.15rem;
+  padding: 1rem;
   box-shadow: var(--sombra);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.cartao-unidade::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 14px;
-  bottom: 14px;
-  width: 3px;
-  border-radius: 0 3px 3px 0;
-  background: linear-gradient(180deg, var(--primaria-forte), var(--primaria));
-  box-shadow: var(--brilho);
-}
 
 .cartao-unidade:hover {
   border-color: var(--borda-forte);
