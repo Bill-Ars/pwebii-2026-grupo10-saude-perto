@@ -1,0 +1,22 @@
+{
+  "name": "pwebii-2026-grupo10-saude-perto",
+  "version": "1.0.0",
+  "description": "Saúde Perto — encontre hospitais, centros de saúde e farmácias perto de si em Moçambique",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "dados": "node scripts/baixar-dados.mjs"
+  },
+  "dependencies": {
+    "@emailjs/browser": "^5.0.3",
+    "vue": "^3.5.46",
+    "vue-router": "^4.6.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.11",
+    "vite": "^8.3.8"
+  },
+  "private": true,
+  "type": "module"
+}
