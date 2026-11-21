@@ -42,6 +42,7 @@ Muitas pessoas em Moçambique não sabem qual é a unidade de saúde ou a farmá
 - **EmailJS** (plano gratuito), chamado a partir do browser com `@emailjs/browser`.
 - Só é usada a *public key* do EmailJS, e os domínios autorizados estão limitados ao nosso GitHub Pages no painel do serviço. As chaves vêm de variáveis de ambiente e nunca estão no código.
 - Na publicação, os valores ficam em **Settings → Secrets and variables → Actions** e são lidos pelo GitHub Actions durante o *build*.
+- O formulário valida os dados e emite um evento; a página de detalhe chama o serviço através de `useEmail`. Sem as três variáveis configuradas, o envio apresenta uma mensagem de indisponibilidade.
 
 ## Correr localmente
 
