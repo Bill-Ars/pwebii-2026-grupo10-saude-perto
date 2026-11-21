@@ -68,7 +68,10 @@ export function useUnidades(cidadeId) {
       try {
         const copia = await carregarCopiaLocal(id, { signal: controlador.signal })
         if (!actual()) return
-        aplicar(normalizarLista(copia.elements ?? [], id), 'copia-local', copia.recolhidoEm ?? copia.osm3s?.timestamp_osm_base)
+        const lista = normalizarLista(copia.elements ?? [], id)
+        // Guardar também à parte, para a página de detalhe encontrar a unidade sem pedir à API
+        guardarCache(`copia:${id}`, lista)
+        aplicar(lista, 'copia-local', copia.recolhidoEm ?? copia.osm3s?.timestamp_osm_base)
         temDados = true
       } catch {
         // sem cópia local: continuamos com a API

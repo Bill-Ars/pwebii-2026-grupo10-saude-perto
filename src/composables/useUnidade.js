@@ -20,6 +20,7 @@ export function useUnidade(osmType, osmId) {
 
     const guardada =
       procurarNasCaches('unidades:', (lista) => lista.find((u) => u.id === chaveId)) ??
+      procurarNasCaches('copia:', (lista) => lista.find((u) => u.id === chaveId)) ??
       lerCache(`unidade:${chaveId}`)?.valor
     if (guardada) {
       unidade.value = guardada
