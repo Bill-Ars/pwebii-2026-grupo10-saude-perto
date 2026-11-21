@@ -6,13 +6,17 @@ import { lerCache, guardarCache } from '../services/cache.js'
 const VALIDADE_MS = 24 * 60 * 60 * 1000 // 24 horas
 
 /**
- * Lista de unidades de saúde de uma cidade.
- * Ordem de tentativa: cache recente → Overpass API → cache antiga → cópia local do dataset.
+ * Lista de unidades de saúde de uma cidade, mostrada SEM ESPERAR pela API:
+ * 1. cache recente (memória/localStorage) → mostra logo e não faz pedidos;
+ * 2. senão, cópia local do dataset (public/dados/<cidade>.json, servida pelo GitHub Pages) → mostra logo;
+ * 3. em segundo plano, pede os dados actualizados à Overpass API e substitui a lista quando chegarem.
+ * Só mostra erro se não houver nenhuma fonte disponível.
  * @param {import('vue').MaybeRefOrGetter<string>} cidadeId
  */
 export function useUnidades(cidadeId) {
   const unidades = ref([])
-  const aCarregar = ref(false)
+  const aCarregar = ref(false) // nada para mostrar ainda
+  const aActualizar = ref(false) // já há dados no ecrã, a pedir versão mais recente
   const erro = ref(null)
   const origem = ref(null) // 'api' | 'cache' | 'cache-antiga' | 'copia-local'
   const actualizadoEm = ref(null)
@@ -48,40 +52,60 @@ export function useUnidades(cidadeId) {
     controladorActual?.abort()
     const controlador = new AbortController()
     controladorActual = controlador
+    const actual = () => controladorActual === controlador && !controlador.signal.aborted
 
-    aCarregar.value = true
+    // 1) Mostrar já alguma coisa: cache antiga ou cópia local do dataset
+    let temDados = false
+    const antiga = lerCache(chave)
+    if (antiga) {
+      aplicar(antiga.valor, 'cache-antiga', antiga.guardadoEm)
+      temDados = true
+    } else {
+      // Não mostrar dados de outra cidade enquanto a cópia local carrega
+      unidades.value = []
+      origem.value = null
+      aCarregar.value = true
+      try {
+        const copia = await carregarCopiaLocal(id, { signal: controlador.signal })
+        if (!actual()) return
+        aplicar(normalizarLista(copia.elements ?? [], id), 'copia-local', copia.recolhidoEm ?? copia.osm3s?.timestamp_osm_base)
+        temDados = true
+      } catch {
+        // sem cópia local: continuamos com a API
+      }
+    }
+
+    // 2) Actualizar a partir da API (em segundo plano se já houver dados no ecrã)
+    if (temDados) {
+      aCarregar.value = false
+      aActualizar.value = true
+    }
+    else aCarregar.value = true
     erro.value = null
 
     try {
       const elementos = await pedirOverpass(consultaCidade(cidade), { signal: controlador.signal })
+      if (!actual()) return
       const lista = normalizarLista(elementos, id)
       const entrada = guardarCache(chave, lista)
       aplicar(lista, 'api', entrada.guardadoEm)
     } catch (falha) {
-      if (controlador.signal.aborted) return
-
-      const antiga = lerCache(chave)
-      if (antiga) {
-        aplicar(antiga.valor, 'cache-antiga', antiga.guardadoEm)
-        return
-      }
-
-      try {
-        const copia = await carregarCopiaLocal(id, { signal: controlador.signal })
-        aplicar(normalizarLista(copia.elements ?? [], id), 'copia-local', copia.recolhidoEm)
-      } catch {
-        if (controlador.signal.aborted) return
-        console.warn('Falha ao obter unidades:', falha)
+      if (!actual()) return
+      console.warn('Overpass indisponível:', falha?.message ?? falha)
+      if (!temDados) {
         unidades.value = []
         erro.value = 'Não foi possível obter os dados. Verifique a sua ligação à Internet e tente novamente.'
       }
     } finally {
-      if (controladorActual === controlador) aCarregar.value = false
+      if (controladorActual === controlador) {
+        aCarregar.value = false
+        aActualizar.value = false
+      }
     }
   }
 
   watch(() => toValue(cidadeId), () => carregar(), { immediate: true })
   onScopeDispose(() => controladorActual?.abort())
 
-  return { unidades, aCarregar, erro, origem, actualizadoEm, carregar }
+  return { unidades, aCarregar, aActualizar, erro, origem, actualizadoEm, carregar }
 }

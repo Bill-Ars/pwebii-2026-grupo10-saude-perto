@@ -21,7 +21,7 @@ const route = useRoute()
 const router = useRouter()
 const cidade = computed(() => obterCidade(props.cidadeId))
 
-const { unidades, aCarregar, erro, origem, actualizadoEm, carregar } = useUnidades(() => props.cidadeId)
+const { unidades, aCarregar, aActualizar, erro, origem, actualizadoEm, carregar } = useUnidades(() => props.cidadeId)
 const { coordenadas, estado: estadoLocalizacao, erro: erroLocalizacao, pedir } = useLocalizacao()
 
 const tipoInicial = TIPOS[route.query.tipo] ? [route.query.tipo] : []
@@ -59,7 +59,7 @@ const textoOrigem = computed(() => {
     api: `Dados actualizados agora (${data}).`,
     cache: `Dados guardados no telemóvel em ${data}.`,
     'cache-antiga': `Sem ligação ao servidor: a mostrar dados guardados em ${data}.`,
-    'copia-local': `Servidor indisponível: a mostrar a cópia do dataset${data ? ` de ${data}` : ''}.`,
+    'copia-local': `Dados do OpenStreetMap${data ? ` de ${data}` : ''} (cópia incluída na aplicação).`,
   }[origem.value]
 })
 
@@ -144,7 +144,8 @@ function limparFiltros() {
         </p>
         <p class="resumo-lista__origem">
           {{ textoOrigem }}
-          <button type="button" class="botao-texto" :disabled="aCarregar" @click="carregar({ forcar: true })">
+          <span v-if="aActualizar" class="a-actualizar" role="status">A procurar dados mais recentes…</span>
+          <button v-else type="button" class="botao-texto" :disabled="aCarregar" @click="carregar({ forcar: true })">
             <IconeSvg nome="actualizar" :tamanho="14" /> Actualizar
           </button>
         </p>

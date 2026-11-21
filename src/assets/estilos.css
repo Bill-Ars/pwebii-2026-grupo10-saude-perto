@@ -494,6 +494,11 @@ svg {
   margin: 0;
 }
 
+.a-actualizar {
+  margin-left: 0.25rem;
+  font-style: italic;
+}
+
 .resumo-lista__origem {
   font-size: 0.85rem;
   color: var(--texto-suave);
